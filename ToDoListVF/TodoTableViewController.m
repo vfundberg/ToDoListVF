@@ -125,6 +125,7 @@
     NSString *textToMove = moveFrom[fromIndexPath.row];
     [moveFrom removeObjectAtIndex:fromIndexPath.row];
     [moveTo insertObject:textToMove atIndex:toIndexPath.row];
+    [self.model saveTables];
 }
 
 // Override to support conditional rearranging of the table view.
