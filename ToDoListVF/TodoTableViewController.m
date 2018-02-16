@@ -32,9 +32,9 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     
-    if(section == 0){
+    if(section == impSection){
         return @"Viktigt";
-    }else if(section == 1){
+    }else if(section == todoSection){
         return @"Att göra";
     }else{
         return @"Klara";
@@ -58,9 +58,9 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0){
+    if (section == impSection){
         return [self.model importantAmount];
-    }else if (section == 1){
+    }else if (section == todoSection){
         return [self.model todosAmount];
     }else{
         return [self.model doneAmount];
@@ -71,12 +71,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ToDoCell" forIndexPath:indexPath];
     
-    // Configure the cell...
-    
-    if(indexPath.section == 0){
+    if(indexPath.section == impSection){
         cell.textLabel.text = self.model.important[indexPath.row];
         [cell setBackgroundColor:[UIColor grayColor]];
-    }else if (indexPath.section == 1){
+    }else if (indexPath.section == todoSection){
         cell.textLabel.text = self.model.todos[indexPath.row];
         [cell setBackgroundColor:[UIColor whiteColor]];
     }else{
@@ -110,13 +108,7 @@
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        if (indexPath.section == 0) {
-            [self.model deleteImportant:(int)indexPath.row];
-        }else if (indexPath.section == 1){
-            [self.model deleteNote:(int)indexPath.row];
-        }else{
-            [self.model deleteDone:(int)indexPath.row];
-        }
+        [self.model deleteTaskFrom:(int)indexPath.section andIndex:(int)indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
         
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
@@ -128,31 +120,11 @@
 
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-    NSMutableArray *moveTextFrom;
-    NSMutableArray *moveTextTo;
-    
-    if (fromIndexPath.section == 0) {
-        moveTextFrom = self.model.important;
-    }else if (fromIndexPath.section == 1){
-        moveTextFrom = self.model.todos;
-    }else if(fromIndexPath.section == 2){
-        moveTextFrom = self.model.donetodos;
-    }
-    
-    if (toIndexPath.section == 0) {
-        moveTextTo = self.model.important;
-    }else if (toIndexPath.section == 1){
-        moveTextTo = self.model.todos;
-    }else if (toIndexPath.section == 2){
-        moveTextTo = self.model.donetodos;
-    }
-    
-    NSString *stringToMove = moveTextFrom[fromIndexPath.row];
-
-    [moveTextFrom removeObjectAtIndex:fromIndexPath.row];
-    [moveTextTo insertObject:stringToMove atIndex:toIndexPath.row];
-    
-    [self.model saveTables];
+    NSMutableArray *moveFrom = [self.model getSection:(int)fromIndexPath.section];
+    NSMutableArray *moveTo = [self.model getSection:(int)toIndexPath.section];
+    NSString *textToMove = moveFrom[fromIndexPath.row];
+    [moveFrom removeObjectAtIndex:fromIndexPath.row];
+    [moveTo insertObject:textToMove atIndex:toIndexPath.row];
 }
 
 // Override to support conditional rearranging of the table view.

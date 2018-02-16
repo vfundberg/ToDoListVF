@@ -40,7 +40,7 @@
     [[NSUserDefaults standardUserDefaults]setObject:self.important forKey:@"important"];
     [[NSUserDefaults standardUserDefaults]synchronize];
 }
--(void)deleteNote:(NSInteger)index{
+-(void)deleteNote:(int)index{
     [self.todos removeObjectAtIndex:(int)index];
     [[NSUserDefaults standardUserDefaults]setObject:self.todos forKey:@"todos"];
     [[NSUserDefaults standardUserDefaults]synchronize];
@@ -69,6 +69,24 @@
 }
 -(NSUInteger)doneAmount{
     return self.donetodos.count;
+}
+-(NSMutableArray*)getSection:(int)section{
+    if (section == impSection) {
+        return self.important;
+    }else if (section == todoSection){
+        return self.todos;
+    }else{
+        return self.donetodos;
+    }
+}
+-(void)deleteTaskFrom:(int)section andIndex:(int)index{
+    if (section == impSection) {
+        [self deleteImportant:index];
+    }else if (section == todoSection){
+        [self deleteNote:index];
+    }else if (section == doneSection){
+        [self deleteDone:index];
+    }
 }
 
 @end
